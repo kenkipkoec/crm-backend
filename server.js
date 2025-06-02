@@ -6,8 +6,20 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 const app = express();
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://to-do-list-web-ivory.vercel.app"
+];
 const corsOptions = {
-  origin: "http://localhost:5173", // or your frontend port
+  origin: function(origin, callback) {
+    // allow requests with no origin (like mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 };
 app.use(cors(corsOptions));
